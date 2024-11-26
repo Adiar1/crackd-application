@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crackd Helper Application</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #0d47a1;
+            --accent-color-1: #f5f6fa;
+            --accent-color-2: #e8eaf6;
+            --accent-color-3: #303f9f;
+            --text-color: #1a237e;
+            --error-color: #c62828;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--accent-color-1);
+            color: var(--text-color);
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(26, 35, 126, 0.1);
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 10px;
+            background-color: var(--accent-color-2);
+            border: 1px solid rgba(26, 35, 126, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+        }
+
+        .application-header {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--accent-color-3);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid var(--accent-color-2);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+        }
+
+        textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .required {
+            color: var(--error-color);
+            margin-left: 4px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color-3));
+            color: white;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.3);
+        }
+
+        .checkbox-group {
+            margin: 15px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-group label:hover {
+            background: var(--accent-color-2);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .achievement-entry {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .word-count {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        .criteria-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .criteria-list li {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="application-header">
+            <h1>Crackd Helper Application</h1>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-number">2.1%</div>
+                    <div class="stat-label">Acceptance Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">1550+</div>
+                    <div class="stat-label">Min. SAT Score</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">35+</div>
+                    <div class="stat-label">Min. ACT Score</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <style>
+
+    .stat-number {
+        font-size: 1.8em;
+        font-weight: bold;
+        margin-bottom: 5px;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .fade {
+        opacity: 0;
+    }
+</style>
+
+
+<script>
+    function updateAcceptanceRate() {
+        const min = 1.5;
+        const max = 2.7;
+        const randomRate = (Math.random() * (max - min) + min).toFixed(1);
+        const statNumber = document.querySelector('.stat-number');
+
+        // Add fade out effect
+        statNumber.classList.add('fade');
+
+        // Wait for fade out, then update text and fade in
+        setTimeout(() => {
+            statNumber.textContent = randomRate + '%';
+            statNumber.classList.remove('fade');
+        }, 300);
+
+        // Schedule the next update at a random interval
+        const nextUpdateDelay = Math.floor(Math.random() * (7000 - 1000 + 1) + 1000);
+        setTimeout(updateAcceptanceRate, nextUpdateDelay);
+    }
+
+    // Start the initial update
+    updateAcceptanceRate();
+</script>
+
+
+        <div class="criteria-list">
+            <h3>Minimum Requirements:</h3>
+            <ul>
+                <li>SAT Score: 1550+ or ACT Score: 35+</li>
+                <li>Current GPA: 3.9+</li>
+                <li>Must be enrolled in or graduated from a top 20 university</li>
+                <li>Previous teaching/mentoring experience required</li>
+                <li>Must pass our rigorous 3-stage interview process</li>
+                <li>Must complete 100 hours of training before starting</li>
+                <li>Demonstrated excellence in advanced mathematics (Calculus BC 5 or higher)</li>
+                <li>Perfect score in intended teaching section</li>
+            </ul>
+        </div>
+
+        <form id="helperApplication" onsubmit="return validateAndSubmit(event)">
+            <div class="section">
+                <h2>Personal Information</h2>
+                <label>Full Legal Name <span class="required">*</span></label>
+                <input type="text" name="fullName" required>
+
+                <label>University Email <span class="required">*</span></label>
+                <input type="email" name="email" required>
+
+                <label>Personal Email <span class="required">*</span></label>
+                <input type="email" name="personalEmail" required>
+
+                <label>Phone Number <span class="required">*</span></label>
+                <input type="tel" name="phone" required>
+
+                <label>LinkedIn Profile URL <span class="required">*</span></label>
+                <input type="text" name="linkedin" required>
+
+                <label>Age <span class="required">*</span></label>
+                <input type="number" name="age" min="18" required>
+
+                <label>Current Time Zone <span class="required">*</span></label>
+                <select name="timezone" required>
+                    <option value="">Select a time zone</option>
+                    <option value="EST">Eastern (EST)</option>
+                    <option value="CST">Central (CST)</option>
+                    <option value="MST">Mountain (MST)</option>
+                    <option value="PST">Pacific (PST)</option>
+                    <option value="OTHER">Other (Please specify in availability)</option>
+                </select>
+            </div>
+
+            <div class="section">
+                <h2>Academic Excellence</h2>
+                <label>SAT Score <span class="required">*</span></label>
+                <input type="number" name="satScore" min="1550" max="1600" required>
+
+                <label>ACT Score<span class="required">*</span></label>
+                <input type="number" name="actScore" min="35" max="36">
+
+                <label>Current GPA (Unweighted) <span class="required">*</span></label>
+                <input type="number" name="gpa" step="0.01" min="3.98" max="4.0" required>
+
+                <label>Class Rank <span class="required">*</span></label>
+                <input type="number" name="classRank" step="1" max="2" placeholder="e.g., 1 out of 500">
+
+                <label>Current University <span class="required">*</span></label>
+                <select name="university" required>
+                    <option value="">Select University</option>
+                    <option value="harvard">Harvard University</option>
+                    <option value="mit">Massachusetts Institute of Technology</option>
+                    <option value="stanford">Stanford University</option>
+                    <option value="yale">Yale University</option>
+                    <option value="princeton">Princeton University</option>
+                    <option value="caltech">California Institute of Technology</option>
+                    <option value="other_top20">Other Top 20 University</option>
+                </select>
+
+                <label>Major/Field of Study <span class="required">*</span></label>
+                <input type="text" name="major" required>
+
+                <label>Expected Graduation Year (or graduation year) <span class="required">*</span></label>
+                <input type="number" name="gradYear" min="2020" max="2030" required>
+            </div>
+
+            <div class="section">
+                <h2>Coursework</h2>
+                <label>AP/IB Scores (list all with scores) <span class="required">*</span></label>
+                <textarea name="apScores" placeholder="Example:
+AP Calculus BC: 5
+AP Physics C (Mechanics): 5
+AP Physics C (E&M): 5
+AP Chemistry: 5" required></textarea>
+
+                <label>Relevant University Coursework (list with grades) <span class="required">*</span></label>
+                <textarea name="collegeCourses" placeholder="Example:
+Multivariable Calculus: A+
+Linear Algebra: A+
+Abstract Algebra: A+
+Real Analysis: A+" required></textarea>
+
+                <label>Academic Awards and Honors <span class="required">*</span></label>
+                <textarea name="awards" placeholder="Example:
+- National Merit Scholar
+- USA Mathematics Olympiad Qualifier
+- International Mathematics Olympiad Top 5
+- ISEF top 20
+- Coca-Cola Scholar
+- Putnam Competition Top 10" required></textarea>
+            </div>
+
+            <div class="section">
+                <h2>Teaching Expertise</h2>
+                <label>Which sections can you teach? (Must have perfect score in selected sections) <span class="required">*</span></label>
+                <div class="checkbox-group" id="expertiseGroup">
+                    <label><input type="checkbox" name="expertise" value="mathNoDesmos"> SAT Math (No Desmos)</label>
+                    <label><input type="checkbox" name="expertise" value="mathDesmos"> SAT Math (Desmos)</label>
+                    <label><input type="checkbox" name="expertise" value="reading"> SAT Reading</label>
+                    <label><input type="checkbox" name="expertise" value="writing"> SAT Writing</label>
+                    <label><input type="checkbox" name="expertise" value="actMath"> ACT Math</label>
+                    <label><input type="checkbox" name="expertise" value="actScience"> ACT Science</label>
+                    <label><input type="checkbox" name="expertise" value="actEnglish"> ACT English</label>
+                    <label><input type="checkbox" name="expertise" value="actReading"> ACT Reading</label>
+                </div>
+
+                <label>Teaching/Tutoring Experience <span class="required">*</span></label>
+                <textarea name="teachingExperience" placeholder="Detail your experience teaching or tutoring, including:
+- Settings (1-on-1, small group, classroom)
+- Subjects taught
+- Student outcomes and improvements
+- Total hours of teaching experience" required></textarea>
+
+                <label>Teaching Philosophy (500-750 words) <span class="required">*</span></label>
+                <textarea name="teachingPhilosophy" required oninput="updateWordCount(this)"></textarea>
+                <div class="word-count" id="teachingPhilosophyCount">Words: 0/750</div>
+            </div>
+
+            <div class="section">
+                <h2>Case Studies</h2>
+                <label>Describe a challenging student you've worked with and how you helped them succeed (500-750 words) <span class="required">*</span></label>
+                <textarea name="caseStudy1" required oninput="updateWordCount(this)"></textarea>
+                <div class="word-count" id="caseStudy1Count">Words: 0/750</div>
+
+                <label>How would you help a student who consistently scores 650-700 in Math reach 780+? (500-750 words) <span class="required">*</span></label>
+                <textarea name="caseStudy2" required oninput="updateWordCount(this)"></textarea>
+                <div class="word-count" id="caseStudy2Count">Words: 0/750</div>
+            </div>
+
+            <div class="section">
+                <h2>Subject Matter Expertise</h2>
+                <label>Don't solve this problem. Explain why it is wrong. (250-500 words) <span class="required">*</span></label>
+                <p class="problem">f(x)=5x. What is f(10)?</p>
+                <textarea name="mathProblem" required oninput="updateWordCount(this)"></textarea>
+                <div class="word-count" id="mathProblemCount">Words: 0/500</div>
+
+                <label>Which of the following best captures the paradoxical implications of the "quasi-isolationist paradigm" discussed in the paragraph, and how does it relate to the broader metanarrative of human evolution?
+
+                    <br><br>A) The quasi-isolationist paradigm refers to a temporary disengagement from digital interaction, indicating a cyclical return to traditional modes of communication within evolving societal norms.
+                    <br>B) It illustrates a deepening disconnection catalyzed by technologically mediated interactions, suggesting that human evolution may be diverging irreversibly from its communal roots.
+                    <br>C) The term indicates a superficial distancing, implying no genuine detachment from interpersonal bonds but rather a metaphoric allusion to humanity’s adaptive resilience.
+                    <br>D) It underscores the duality of technological progress as both a facilitator of connection and a source of disconnection, questioning its role in the historical trajectory of communal and individual identity.
+                    <br>E) The concept primarily argues that technological advancements reinforce human bonds despite the ostensible distance, indicating a sophisticated yet cyclical pattern of human engagement.
+                    <br><br>Explain your reasoning (500-750 words) <span class="required">*</span></label>
+                <p class="sample-essay">The relentless proliferation of technological modalities, encompassing multifarious digital interfaces and perpetually evolving virtual platforms, has engendered a dialectical discourse predicated upon the paradoxical ramifications of ostensibly enhanced connectivity. Indeed, detractors posit, with an air of circumlocutory lamentation, that the omnipresence of algorithmically mediated communication mechanisms engenders a quasi-isolationist paradigm wherein interpersonal symbiosis is ostensibly subsumed by simulacra of authentic engagement. Such assertions purport that as ethereal streams of instantaneous exchanges supplant traditional modes of human interaction, an inexorable attenuation of empathetic resonance transpires, thereby exacerbating the chasm betwixt genuine human connections and their digital facsimiles. Whether this technocratic trajectory presages an irreversible dissolution of communal cohesion or merely constitutes a transitional phase within the greater metanarrative of human evolution remains, however, the subject of considerable intellectual disputation.</p>
+                <textarea name="essayFeedback" required oninput="updateWordCount(this)"></textarea>
+                <div class="word-count" id="essayFeedbackCount">Words: 0/750</div>
+            </div>
+
+            <div class="section">
+                <h2>Commitment & Availability</h2>
+                <label>Weekly Hours Available (minimum 15) <span class="required">*</span></label>
+                <input type="number" name="weeklyHours" min="15" max="40" required>
+
+                <label>Are you willing to commit to a minimum of 12 months? <span class="required">*</span></label>
+                <select name="commitment" required>
+                    <option value="">Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+
+                <label>Are you willing to complete our 100-hour training program? <span class="required">*</span></label>
+                <select name="training" required>
+                    <option value="">Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+
+                <label>Detailed Weekly Availability <span class="required">*</span></label>
+                <textarea name="availability" placeholder="Please provide specific hours for each day of the week" required></textarea>
+            </div>
+
+            <div class="section">
+                <h2>Professional References</h2>
+                <label>Please provide three academic or professional references who can speak to your teaching abilities.</label>
+
+                <h3>Reference 1 (Academic Advisor/Professor)</h3>
+                <label>Name <span class="required">*</span></label>
+                <input type="text" name="ref1Name" required>
+                <label>Title & Institution <span class="required">*</span></label>
+                <input type="text" name="ref1Title" required>
+                <label>Email <span class="required">*</span></label>
+                <input type="email" name="ref1Email" required>
+                <label>Phone <span class="required">*</span></label>
+                <input type="tel" name="ref1Phone" required>
+
+                <h3>Reference 2 (Teaching Supervisor)</h3>
+                <label>Name <span class="required">*</span></label>
+                <input type="text" name="ref2Name" required>
+                <label>Title & Institution <span class="required">*</span></label>
+                <input type="text" name="ref2Title" required>
+                <label>Email <span class="required">*</span></label>
+                <input type="email" name="ref2Email" required>
+                <label>Phone <span class="required">*</span></label>
+                <input type="tel" name="ref2Phone" required>
+
+                <h3>Reference 3 (Professional Reference)</h3>
+                <label>Name <span class="required">*</span></label>
+                <input type="text" name="ref3Name" required>
+                <label>Title & Institution <span class="required">*</span></label>
+                <input type="text" name="ref3Title" required>
+                <label>Email <span class="required">*</span></label>
+                <input type="email" name="ref3Email" required>
+                <label>Phone <span class="required">*</span></label>
+                <input type="tel" name="ref3Phone" required>
+            </div>
+
+            <div class="section">
+                <h2>Final Verification</h2>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" name="verification1" required>
+                        I certify that all information provided is true and accurate. I understand that any false statements will result in immediate termination of my application or position.
+                    </label>
+                    <label>
+                        <input type="checkbox" name="verification2" required>
+                        I understand that I must complete 100 hours of training before being assigned any students.
+                    </label>
+                    <label>
+                        <input type="checkbox" name="verification3" required>
+                        I agree to maintain a minimum rating of 4.8/5.0 from students and parents.
+                    </label>
+                    <label>
+                        <input type="checkbox" name="verification4" required>
+                        I understand that I must pass a mock teaching session and complete a content expertise exam before final acceptance.
+                    </label>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error"></div>
+            <button type="submit">Submit Crackd Helper Application</button>
+        </form>
+    </div>
+
+    <script>
+        function updateWordCount(textarea) {
+            const wordCount = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+            const countDisplay = document.getElementById(textarea.name + 'Count');
+            const maxWords = textarea.name.includes('mathProblem') ? 500 : 750;
+            countDisplay.textContent = `Words: ${wordCount}/${maxWords}`;
+            countDisplay.style.color = wordCount < maxWords * 0.8 ? 'red' :
+                                     wordCount > maxWords ? '#c62828' : '#1a237e';
+        }
+
+        function validateAndSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('helperApplication');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.style.display = 'none';
+
+            // Validate all required fields
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            let firstError = null;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = 'var(--error-color)';
+                    if (!firstError) firstError = field;
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+
+            // Validate word counts
+            const essayFields = ['teachingPhilosophy', 'caseStudy1', 'caseStudy2', 'mathProblem', 'essayFeedback'];
+            essayFields.forEach(fieldName => {
+                const field = form.querySelector(`[name="${fieldName}"]`);
+                const wordCount = field.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+                const minWords = fieldName === 'mathProblem' ? 250 : 500;
+                const maxWords = fieldName === 'mathProblem' ? 500 : 750;
+
+                if (wordCount < minWords || wordCount > maxWords) {
+                    isValid = false;
+                    field.style.borderColor = 'var(--error-color)';
+                    if (!firstError) firstError = field;
+                }
+            });
+
+            if (!isValid) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please fill out all required fields and ensure essays meet word count requirements.';
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            generatePDF();
+            alert('Application complete! Once you send the attached PDF to @adiar., @cacuworld, @amani4167, or @pinguwa, our team will review your application and contact you within 5-7 business days for the next steps in the selection process.');
+            form.reset();
+            return false;
+        }
+
+function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 20;
+    let yPosition = margin;
+
+    // Helper function to add a new page if needed
+    function checkPageBreak(height) {
+        if (yPosition + height > doc.internal.pageSize.height - margin) {
+            doc.addPage();
+            yPosition = margin;
+        }
+    }
+
+    // Helper function to add a section title
+    function addSectionTitle(title) {
+        checkPageBreak(15);
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text(title, margin, yPosition);
+        yPosition += 10;
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(12);
+    }
+
+    // Helper function to add a field
+    function addField(key, value) {
+        const text = `${key}: ${value}`;
+        const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+        checkPageBreak(lines.length * 7);
+        doc.text(lines, margin, yPosition);
+        yPosition += lines.length * 7 + 3;
+    }
+
+    // Title
+    doc.setFontSize(22);
+    doc.setFont(undefined, 'bold');
+    doc.text('Crackd Helper Application', margin, yPosition);
+    yPosition += 15;
+
+    const form = document.getElementById('helperApplication');
+    const formData = new FormData(form);
+    const sections = {
+        'Personal Information': ['fullName', 'email', 'personalEmail', 'phone', 'linkedin', 'age', 'timezone'],
+        'Academic Excellence': ['satScore', 'actScore', 'gpa', 'classRank', 'university', 'major', 'gradYear'],
+        'Coursework': ['apScores', 'collegeCourses', 'awards'],
+        'Teaching Expertise': ['expertise', 'teachingExperience', 'teachingPhilosophy'],
+        'Case Studies': ['caseStudy1', 'caseStudy2'],
+        'Subject Matter Expertise': ['mathProblem', 'essayFeedback'],
+        'Commitment & Availability': ['weeklyHours', 'commitment', 'training', 'availability'],
+        'Professional References': ['ref1Name', 'ref1Title', 'ref1Email', 'ref1Phone', 'ref2Name', 'ref2Title', 'ref2Email', 'ref2Phone', 'ref3Name', 'ref3Title', 'ref3Email', 'ref3Phone'],
+        'Final Verification': ['verification1', 'verification2', 'verification3', 'verification4']
+    };
+
+    for (const [section, fields] of Object.entries(sections)) {
+        addSectionTitle(section);
+        fields.forEach(field => {
+            if (formData.has(field)) {
+                addField(field, formData.get(field));
+            }
+        });
+        yPosition += 5; // Add some space between sections
+    }
+
+    doc.save('Crackd_Helper_Application.pdf');
+}
+    </script>
